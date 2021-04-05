@@ -22,7 +22,7 @@ export default gql`
   }
 
   input UpdateCommentType {
-    content: String!
+    content: String
   }
 
   type CommentSubscriptionPayload {

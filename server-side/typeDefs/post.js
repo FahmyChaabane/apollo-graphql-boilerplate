@@ -21,7 +21,7 @@ export default gql`
   }
 
   input UpdatePostType {
-    content: String!
+    content: String
   }
 
   type PostSubscriptionPayload {

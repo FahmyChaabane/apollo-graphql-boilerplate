@@ -24,11 +24,11 @@ export default gql`
   }
 
   input UpdateUserType {
-    firstName: String!
-    lastName: String!
-    userName: String!
-    email: String!
-    age: Int!
+    firstName: String
+    lastName: String
+    userName: String
+    email: String
+    age: Int
   }
 
   input CreatePostInput {
@@ -37,7 +37,7 @@ export default gql`
   }
 
   input UpdatePostType {
-    content: String!
+    content: String
   }
 
   input CreateCommentInput {
@@ -47,7 +47,7 @@ export default gql`
   }
 
   input UpdateCommentType {
-    content: String!
+    content: String
   }
 
   type PostSubscriptionPayload {

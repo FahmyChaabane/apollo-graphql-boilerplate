@@ -20,7 +20,7 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
 (async () => {
   try {
     await dbConfig();
-    console.log(`🚀 connected to ${MONGO_DATABASE} db...`);
+    console.log(`🚀 connected to ${MONGO_DATABASE} DB!`);
 
     const app = express();
     const server = new ApolloServer({
@@ -45,12 +45,12 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
     app.use("/", home);
     app.use(error);
 
-    app.listen(
-      APP_PORT,
+    app.listen(APP_PORT, () => {
+      console.log(`🚀 🚀  Server set up for ${NODE_ENV} environment!`);
       console.log(
-        `🚀 🚀 🚀 Server ready at http://localhost:${APP_PORT}${server.graphqlPath} for ${NODE_ENV} environment`
-      )
-    );
+        `🚀 🚀 🚀 GraphQL Server ready at http://localhost:${APP_PORT}${server.graphqlPath}!`
+      );
+    });
   } catch (e) {
     console.log(e.message);
   }

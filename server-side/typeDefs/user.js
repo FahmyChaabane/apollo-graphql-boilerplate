@@ -11,11 +11,11 @@ export default gql`
   }
 
   input UpdateUserType {
-    firstName: String!
-    lastName: String!
-    userName: String!
-    email: String!
-    age: Int!
+    firstName: String
+    lastName: String
+    userName: String
+    email: String
+    age: Int
   }
 
   enum userRole {
