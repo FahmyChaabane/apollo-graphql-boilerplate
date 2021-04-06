@@ -48,9 +48,11 @@ userSchema.statics.findByEmail = async (email) => {
 
 userSchema.methods.generateJWT = async function () {
   return await jwt.sign(
-    { _id: this._id, name: this.name, isAdmin: this.isAdmin },
+    { _id: this._id, username: this.userName, role: this.role },
     process.env.JWT_SECRET_KEY,
-    { expiresIn: "7 days" }
+    {
+      expiresIn: "7 days",
+    }
   );
 };
 

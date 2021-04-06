@@ -4,3 +4,16 @@
 #node_modules
 /server-side/node_modules
 /client-side/node_modules 
+
+# testing
+/client-side/coverage
+
+# production
+/client-side/build
+
+# misc
+/client-side.DS_Store
+/client-side.env.local
+/client-side.env.development.local
+/client-side.env.test.local
+/client-side.env.production.local

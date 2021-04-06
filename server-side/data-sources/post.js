@@ -1,15 +1,22 @@
 import { MongoDataSource } from "apollo-datasource-mongodb";
 
 class Posts extends MongoDataSource {
-  async getPosts(filter = null) {
-    console.log("context", this.context.headers.authorization);
-    return filter
-      ? await this.model.find({ content: new RegExp(`.*${filter}.*`, "i") })
-      : await this.model.find({});
+  async getPosts(filter) {
+    const { role, _id: author } = this.context.user;
+    if (role === "ADMIN")
+      return filter
+        ? await this.model.find({ content: new RegExp(`.*${filter}.*`, "i") })
+        : await this.model.find({});
+    else
+      return filter
+        ? await this.model.find({
+            content: new RegExp(`.*${filter}.*`, "i"),
+            author,
+          })
+        : await this.model.find({ author });
   }
 
   async addPost(data = {}) {
-    console.log("context", this.context.headers.authorization);
     const post = new this.model({
       ...data,
     });
@@ -39,6 +46,7 @@ class Posts extends MongoDataSource {
   async getToBeDeletedPosts(author) {
     return await this.model.find({ author });
   }
+
   /*
   async removePostsAssociatedToUser(author) {
     await this.model.deleteOne({ author });

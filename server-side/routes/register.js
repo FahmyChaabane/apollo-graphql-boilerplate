@@ -1,6 +1,6 @@
 import { User } from "../models/user";
-import validateUserInput from "../services/validateUserRegistrationSchema";
-import validatePassedId from "../services/validateMongodbId";
+import validateUserInput from "../utils/validateUserRegistrationSchema";
+import validatePassedId from "../utils/validateMongodbId";
 import express from "express";
 const router = express.Router();
 
@@ -11,7 +11,6 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   // registering
-  console.log(req.body);
   const { error } = validateUserInput(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

@@ -1,19 +1,11 @@
 import "express-async-errors";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
 import dbConfig from "./configs/db";
-import schema from "./typeDefs";
-import resolvers from "./resolvers";
+import apolloConfig from "./configs/apollo";
 import register from "./routes/register";
 import auth from "./routes/auth";
 import home from "./routes/home";
 import error from "./middlewares/error";
-import Users from "./data-sources/user";
-import Posts from "./data-sources/post";
-import Comments from "./data-sources/comment";
-import { User } from "./models/user";
-import { Comment } from "./models/comment";
-import { Post } from "./models/post";
 
 const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
 
@@ -22,21 +14,10 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
     await dbConfig();
     console.log(`🚀 connected to ${MONGO_DATABASE} DB!`);
 
-    const app = express();
-    const server = new ApolloServer({
-      typeDefs: schema,
-      resolvers,
-      dataSources: () => ({
-        users: new Users(User),
-        posts: new Posts(Post),
-        comments: new Comments(Comment),
-      }),
-      context: ({ req }) => {
-        return req;
-      },
-    });
+    const server = apolloConfig();
     await server.start();
 
+    const app = express();
     server.applyMiddleware({ app });
 
     app.use(express.json());
