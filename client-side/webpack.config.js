@@ -12,6 +12,7 @@ module.exports = {
     contentBase: "./dist",
   },
   optimization: {
+    moduleIds: "deterministic",
     runtimeChunk: "single",
     splitChunks: {
       cacheGroups: {
@@ -48,9 +49,13 @@ module.exports = {
       },
     ],
   },
+  devServer: {
+    port: 4000,
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html"),
+      favicon: path.resolve(__dirname, "public/eye.png"),
     }),
   ],
 };
