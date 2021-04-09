@@ -25,7 +25,7 @@ export default () => {
       let user;
       try {
         // try to retrieve a user with the token
-        user = await getUser(token);
+        // user = await getUser(token);
       } catch (error) {
         // block the user
         throw new AuthenticationError(

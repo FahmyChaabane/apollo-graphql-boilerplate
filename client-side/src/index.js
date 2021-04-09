@@ -1,12 +1,8 @@
 import React from "react";
 import ReactDom from "react-dom";
 import App from "./App";
-import {
-  ApolloClient,
-  InMemoryCache,
-  gql,
-  ApolloProvider,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { BrowserRouter } from "react-router-dom";
 import "./style.css";
 
 const client = new ApolloClient({
@@ -14,24 +10,10 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-client
-  .query({
-    query: gql`
-      query {
-        users {
-          id
-          userName
-          role
-        }
-      }
-    `,
-  })
-  .then((result) => console.log(result))
-  .catch((e) => console.log(e));
-
 ReactDom.render(
-  <ApolloProvider client={client}>
+  //<ApolloProvider client={client}>
+  <BrowserRouter>
     <App />
-  </ApolloProvider>,
-  document.getElementById("root")
+  </BrowserRouter>,
+  /*</ApolloProvider>*/ document.getElementById("root")
 );

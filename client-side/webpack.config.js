@@ -6,9 +6,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].[contenthash].js",
+    publicPath: "/",
     clean: true,
   },
   devServer: {
+    historyApiFallback: true,
     contentBase: "./dist",
   },
   optimization: {

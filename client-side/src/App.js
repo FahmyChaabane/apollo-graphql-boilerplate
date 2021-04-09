@@ -1,33 +1,30 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
-
-const EXCHANGE_COMMENTS = gql`
-  query {
-    comments {
-      id
-      content
-      createdAt
-      post {
-        content
-      }
-    }
-  }
-`;
+import Header from "./components/Header";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Profile from "./components/Profile";
+import NotFound from "./components/NotFound";
+import Post from "./components/Post";
+import Home from "./components/Home";
+import { Redirect, Route, Switch, Link } from "react-router-dom";
 
 function App() {
-  const { loading, error, data } = useQuery(EXCHANGE_COMMENTS);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
-  return data.comments.map(({ content, createdAt }) => (
-    <div key={createdAt}>
-      <p>
-        {content}: @ {createdAt}
-      </p>
-    </div>
-  ));
-
-  return <div> Hello from React World !!</div>;
+  return (
+    <React.Fragment>
+      <Link to="/login">login</Link>
+      <Link to="/register">register</Link>
+      <Header />
+      <Switch>
+        <Route path="/login" exact component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/Post/:id" component={Post} />
+        <Route path="/profile/:id" component={Profile} />
+        <Route path="/not-found" component={NotFound} />
+        <Route path="/home" component={Home} />
+        <Redirect from="/" to="/home" />
+        <Redirect to="/not-found" />
+      </Switch>
+    </React.Fragment>
+  );
 }
 export default App;
