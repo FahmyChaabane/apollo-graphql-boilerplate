@@ -1,5 +1,6 @@
 import "express-async-errors";
 import express from "express";
+import cors from "cors";
 import dbConfig from "./configs/db";
 import apolloConfig from "./configs/apollo";
 import register from "./routes/register";
@@ -19,6 +20,20 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
 
     const app = express();
     server.applyMiddleware({ app });
+
+    const whitelist = ["http://localhost:4000"];
+    const corsOptions = {
+      origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      // allowedHeaders: ["content-length", "content-type", "x-auth"],
+      exposedHeaders: ["content-length", "content-type", "x-auth"],
+    };
+    app.use(cors(corsOptions));
 
     app.use(express.json());
     app.use("/api/register", register);

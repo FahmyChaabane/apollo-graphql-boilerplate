@@ -1,9 +1,9 @@
 import Joi from "joi";
 
 const schema = Joi.object({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  userName: Joi.string().required(),
+  firstName: Joi.string().required().min(5),
+  lastName: Joi.string().required().min(5),
+  userName: Joi.string().required().min(5),
   age: Joi.number().required(),
   role: Joi.string().required(),
   email: Joi.string().email().required(),

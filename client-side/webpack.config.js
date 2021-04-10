@@ -1,8 +1,9 @@
 const path = require("path");
+const Dotenv = require("dotenv-webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: ["@babel/polyfill", "./src/index.js"],
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].[contenthash].js",
@@ -10,6 +11,12 @@ module.exports = {
     clean: true,
   },
   devServer: {
+    port: 4000,
+    onListening: function (server) {
+      const port = server.listeningApp.address().port;
+      console.log("🚀 Server is ready");
+      console.log("🚀 🚀 Listening on port:", port);
+    },
     historyApiFallback: true,
     contentBase: "./dist",
   },
@@ -35,7 +42,7 @@ module.exports = {
         use: ["babel-loader", "eslint-loader"],
       },
       {
-        test: /\.css$/i,
+        test: /\.s?css$/i,
         exclude: /node_modules/,
         use: ["style-loader", "css-loader"],
       },
@@ -51,13 +58,11 @@ module.exports = {
       },
     ],
   },
-  devServer: {
-    port: 4000,
-  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html"),
       favicon: path.resolve(__dirname, "public/eye.png"),
     }),
+    new Dotenv(),
   ],
 };

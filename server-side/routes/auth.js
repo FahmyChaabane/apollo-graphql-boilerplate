@@ -16,7 +16,6 @@ router.post("/", async (req, res) => {
   if (!validPwd) return res.status(400).send("Email or Password invalid.");
 
   const token = await user.generateJWT();
-  console.log("jwt token genrated: ", token);
 
   res.send(token);
 });

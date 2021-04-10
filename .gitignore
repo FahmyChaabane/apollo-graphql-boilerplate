@@ -1,5 +1,6 @@
 #.env
 /server-side/.env
+/client-side/.env
 
 #node_modules
 /server-side/node_modules
