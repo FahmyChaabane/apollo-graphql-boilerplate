@@ -7,6 +7,8 @@ import NotFound from "./components/NotFound";
 import Post from "./components/Post";
 import Logout from "./components/Logout";
 import Home from "./components/Home";
+import PublicRoute from "./Routes/PublicRoute";
+import PrivateRoute from "./Routes/PrivateRoute";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "!style-loader!css-loader!react-toastify/dist/ReactToastify.css";
@@ -17,13 +19,14 @@ function App() {
       <ToastContainer />
       <Header />
       <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/logout" component={Logout} />
-        <Route path="/register" component={Register} />
-        <Route path="/Post/:id" component={Post} />
-        <Route path="/profile/:id" component={Profile} />
+        <PublicRoute path="/login" component={Login} />
+        <PublicRoute path="/register" component={Register} />
+        <PrivateRoute path="/logout" component={Logout} />
+        <PrivateRoute path="/post/:id" component={Post} />
+        <PrivateRoute path="/profile/:id" component={Profile} />
+        <PrivateRoute path="/profile" component={Profile} />
+        <PrivateRoute path="/home" component={Home} />
         <Route path="/not-found" component={NotFound} />
-        <Route path="/home" component={Home} />
         <Redirect from="/" exact to="/home" />
         <Redirect to="/not-found" />
       </Switch>

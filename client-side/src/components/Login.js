@@ -38,8 +38,9 @@ const Login = (props) => {
     }
     try {
       await login(email, password);
-      console.log(props);
-      props.history.push("/");
+      props.location.state
+        ? props.history.push(props.location.state.from)
+        : props.history.push("/");
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const requestError = { ...requestError };

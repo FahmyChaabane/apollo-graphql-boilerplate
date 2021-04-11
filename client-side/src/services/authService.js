@@ -40,6 +40,15 @@ export const isAuthenticated = () => {
   return !!localStorage.getItem(tokenKey);
 };
 
+export const getCurrentUser = () => {
+  try {
+    const jwt = localStorage.getItem(tokenKey);
+    return JwtDecoder(jwt);
+  } catch (ex) {
+    return null;
+  }
+};
+
 export const logout = () => {
   localStorage.removeItem(tokenKey);
 };

@@ -1,7 +1,6 @@
 import React from "react";
 
 const Post = () => {
-  return <div>a Post</div>;
+  return <div>Home</div>;
 };
-
 export default Post;

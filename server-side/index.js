@@ -44,7 +44,7 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
     app.listen(APP_PORT, () => {
       console.log(`🚀 🚀  Server set up for ${NODE_ENV} environment!`);
       console.log(
-        `🚀 🚀 🚀 GraphQL Server ready at http://localhost:${APP_PORT}${server.graphqlPath}!`
+        `🚀 🚀 🚀 GraphQL Server ready at http://localhost:${APP_PORT}${server.graphqlPath}  !`
       );
     });
   } catch (e) {
