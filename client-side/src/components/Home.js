@@ -1,59 +1,63 @@
-import React from "react";
-import moment from "moment";
-import { useQuery } from "@apollo/client";
-import { GET_POSTS } from "../services/apollo/queries";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useQuery, useMutation } from "@apollo/client";
+import { CREATE_POST, GET_POSTS } from "../services/apollo/queries";
+import { toast } from "react-toastify";
+import Postitem from "./Postitem";
+import { getCurrentUser } from "../services/authService";
+import loader from "../../images/loader.gif";
 
 const Home = () => {
-  const { loading, error, data } = useQuery(GET_POSTS);
+  const { loading, error, data } = useQuery(GET_POSTS, {
+    onError: () => {
+      return toast.error("something went wrong");
+    },
+  });
+  const [createNewPost, { loading: mutationLoading }] = useMutation(
+    CREATE_POST,
+    {
+      onError: () => {
+        return toast.error("something went wrong");
+      },
+    }
+  );
 
-  if (loading) return "Loading...";
+  const [newPost, setnewPost] = useState("");
+
+  const onNewPostChange = ({ target }) => {
+    const input = target.value;
+    setnewPost(input);
+  };
+
+  const createPost = ({}) => {
+    createNewPost({
+      variables: { data: { author: getCurrentUser()._id, content: newPost } },
+      refetchQueries: [{ query: GET_POSTS }],
+    });
+    setnewPost("");
+  };
+
+  if (loading) return <img src={loader} />;
   if (error) return `Error! ${error.message}`;
 
   return (
     <div>
       <i>Create a Post: </i>
-      <input type="text" placeholder="write something..." />
+      <textarea
+        type="text"
+        className="p_wrap"
+        value={newPost}
+        placeholder="write something..."
+        onChange={onNewPostChange}
+      />
+      <button onClick={createPost}>post</button>
+      {mutationLoading && (
+        <div>
+          <img src={loader} />
+        </div>
+      )}
       <ul>
         {data.posts.map((post) => (
-          <li key={post.id}>
-            <Link to={`/profile/${post.author.id}`}>
-              {post.author.userName}
-            </Link>
-            :{post.content} <button>expand</button>
-            <button>edit</button>
-            <button>delete</button>
-            <br />
-            <small>
-              posted at :
-              {moment
-                .unix(post.createdAt / 1000)
-                .format("MMMM Do YYYY, h:mm:ss a")}
-            </small>
-            <br />
-            comments :
-            <ul>
-              {post.comments.map((comment) => (
-                <li key={comment.id}>
-                  <Link to={`/profile/${comment.author.id}`}>
-                    {comment.author.userName}
-                  </Link>
-                  :{comment.content} <button>edit</button>
-                  <button>delete</button>
-                  <br />
-                  <small>
-                    commented at :
-                    {moment
-                      .unix(post.createdAt / 1000)
-                      .format("MMMM Do YYYY, h:mm:ss a")}
-                  </small>
-                  <br />
-                  <input type="text" placeholder="add comment" />
-                </li>
-              ))}
-            </ul>
-            <hr />
-          </li>
+          <Postitem key={post.id} post={post} />
         ))}
       </ul>
     </div>

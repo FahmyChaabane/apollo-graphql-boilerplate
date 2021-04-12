@@ -5,8 +5,10 @@ class Posts extends MongoDataSource {
     const { role, _id: author } = this.context.user;
     if (role === "ADMIN")
       return filter
-        ? await this.model.find({ content: new RegExp(`.*${filter}.*`, "i") })
-        : await this.model.find({});
+        ? await this.model
+            .find({ content: new RegExp(`.*${filter}.*`, "i") })
+            .sort({ createdAt: -1 })
+        : await this.model.find({}).sort({ createdAt: -1 });
     else
       return filter
         ? await this.model.find({

@@ -51,7 +51,7 @@ userSchema.methods.generateJWT = async function () {
     { _id: this._id, username: this.userName, role: this.role },
     process.env.JWT_SECRET_KEY,
     {
-      expiresIn: "7 days",
+      expiresIn: "2h",
     }
   );
 };

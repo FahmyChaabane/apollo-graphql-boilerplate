@@ -49,6 +49,10 @@ export const getCurrentUser = () => {
   }
 };
 
+export const isExpired = () => {
+  return getCurrentUser() ? getCurrentUser().exp < Date.now() / 1000 : true;
+};
+
 export const logout = () => {
   localStorage.removeItem(tokenKey);
 };
