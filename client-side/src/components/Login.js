@@ -38,9 +38,12 @@ const Login = (props) => {
     }
     try {
       await login(email, password);
+      /*
       props.location.state
         ? props.history.push(props.location.state.from)
         : props.history.push("/");
+        */
+      window.location = props.location.state ? props.location.state.from : "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const requestError = { ...requestError };

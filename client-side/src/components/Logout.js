@@ -4,7 +4,7 @@ import { logout } from "../services/authService";
 const Logout = (props) => {
   useEffect(() => {
     logout();
-    props.history.push("/login");
+    window.location = "/login";
   }, []);
 
   return null;

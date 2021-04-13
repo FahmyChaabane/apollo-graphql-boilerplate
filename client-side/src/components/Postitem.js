@@ -1,22 +1,33 @@
 import React, { useState } from "react";
 import moment from "moment";
 import Commentitem from "./Commentitem";
+import loader from "../images/loader.gif";
 import { useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 import {
+  CREATE_COMMENT,
   GET_POSTS,
   REMOVE_POST,
   UPDATE_POST,
 } from "../services/apollo/queries";
+import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import _ from "lodash";
+import currentUser from "../services/apollo/cache";
 
 const Postitem = (props) => {
   const { post } = props;
+  const onError = () => onErrorMutation(MUTATING);
 
   const [editablePost, seteditablePost] = useState(true);
   const [TobeUpdatedPost, setUpdatePost] = useState(props.post.content);
+  const [newComment, setnewComment] = useState("");
 
-  const [updatePost] = useMutation(UPDATE_POST);
-  const [removePost] = useMutation(REMOVE_POST);
+  const [updatePost] = useMutation(UPDATE_POST, { onError });
+  const [removePost] = useMutation(REMOVE_POST, { onError });
+  const [
+    createNewComment,
+    { loading: mutationLoading },
+  ] = useMutation(CREATE_COMMENT, { onError });
 
   const onPostChange = ({ target }) => {
     const input = target.value;
@@ -26,7 +37,6 @@ const Postitem = (props) => {
   const onSavePost = () => {
     updatePost({
       variables: { id: post.id, data: { content: TobeUpdatedPost } },
-      //refetchQueries: [{ query: GET_POSTS }],
     });
     seteditablePost(true);
   };
@@ -39,8 +49,23 @@ const Postitem = (props) => {
     seteditablePost(true);
   };
 
+  const onNewCommentChange = ({ target }) => {
+    const input = target.value;
+    setnewComment(input);
+  };
+
   const createComment = () => {
-    console.log("clicked");
+    createNewComment({
+      variables: {
+        data: {
+          content: newComment,
+          author: currentUser()._id,
+          post: post.id,
+        },
+      },
+      refetchQueries: [{ query: GET_POSTS }],
+    });
+    setnewComment("");
   };
 
   return (
@@ -67,17 +92,25 @@ const Postitem = (props) => {
             value={TobeUpdatedPost}
             onChange={onPostChange}
           />
-          <button onClick={onSavePost}>save</button>
-          <button onClick={() => seteditablePost(true)}>cancel</button>
+          <button disabled={_.isEmpty(TobeUpdatedPost)} onClick={onSavePost}>
+            save
+          </button>
+          <button
+            onClick={() => {
+              seteditablePost(true);
+              setUpdatePost(post.content);
+            }}
+          >
+            cancel
+          </button>
         </div>
       )}
-      <br />
       <small>
         posted at :
         {moment.unix(post.createdAt / 1000).format("MMMM Do YYYY, h:mm:ss a")}
       </small>
       <br />
-      {post.comments && (
+      {post.comments.length !== 0 && (
         <ul>
           comments :
           {post.comments.map((comment) => (
@@ -85,8 +118,20 @@ const Postitem = (props) => {
           ))}
         </ul>
       )}
-      <input type="text" placeholder="add comment" />{" "}
-      <button onClick={createComment}>comment</button>
+      {mutationLoading && (
+        <div>
+          <img src={loader} />
+        </div>
+      )}
+      <input
+        type="text"
+        placeholder="add comment"
+        value={newComment}
+        onChange={onNewCommentChange}
+      />
+      <button disabled={_.isEmpty(newComment)} onClick={createComment}>
+        comment
+      </button>
       <hr />
     </li>
   );

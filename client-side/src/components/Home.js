@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { CREATE_POST, GET_POSTS } from "../services/apollo/queries";
-import { toast } from "react-toastify";
+import onError, { MUTATING, QUERYING } from "../services/apollo/errorsHandler";
 import Postitem from "./Postitem";
-import { getCurrentUser } from "../services/authService";
-import loader from "../../images/loader.gif";
+import loader from "../images/loader.gif";
+import _ from "lodash";
+import currentUser from "../services/apollo/cache";
 
 const Home = () => {
+  const [newPost, setnewPost] = useState("");
+
   const { loading, error, data } = useQuery(GET_POSTS, {
-    onError: () => {
-      return toast.error("something went wrong");
-    },
+    onError: () => onError(QUERYING),
   });
   const [createNewPost, { loading: mutationLoading }] = useMutation(
     CREATE_POST,
     {
-      onError: () => {
-        return toast.error("something went wrong");
-      },
+      onError: () => onError(MUTATING),
     }
   );
-
-  const [newPost, setnewPost] = useState("");
 
   const onNewPostChange = ({ target }) => {
     const input = target.value;
@@ -30,7 +27,7 @@ const Home = () => {
 
   const createPost = ({}) => {
     createNewPost({
-      variables: { data: { author: getCurrentUser()._id, content: newPost } },
+      variables: { data: { author: currentUser()._id, content: newPost } },
       refetchQueries: [{ query: GET_POSTS }],
     });
     setnewPost("");
@@ -49,7 +46,9 @@ const Home = () => {
         placeholder="write something..."
         onChange={onNewPostChange}
       />
-      <button onClick={createPost}>post</button>
+      <button disabled={_.isEmpty(newPost)} onClick={createPost}>
+        post
+      </button>
       {mutationLoading && (
         <div>
           <img src={loader} />

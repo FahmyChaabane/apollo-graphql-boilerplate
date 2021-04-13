@@ -9,15 +9,20 @@ import Logout from "./components/Logout";
 import Home from "./components/Home";
 import PublicRoute from "./Routes/PublicRoute";
 import PrivateRoute from "./Routes/PrivateRoute";
+import currentUser from "./services/apollo/cache";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { getCurrentUser } from "./services/authService";
 import "!style-loader!css-loader!react-toastify/dist/ReactToastify.css";
 
 function App() {
+  currentUser(getCurrentUser());
+
   return (
     <React.Fragment>
       <ToastContainer />
       <Header />
+
       <Switch>
         <PublicRoute path="/login" component={Login} />
         <PublicRoute path="/register" component={Register} />

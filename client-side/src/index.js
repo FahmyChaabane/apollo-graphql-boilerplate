@@ -31,6 +31,7 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   //uri: "http://localhost:8080/graphql",
   cache: new InMemoryCache(),
+  connectToDevTools: true,
 });
 
 ReactDom.render(

@@ -1,34 +1,96 @@
 import React, { useState } from "react";
 import moment from "moment";
+import _ from "lodash";
+import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import { useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
+import {
+  GET_POSTS,
+  UPDATE_COMMENT,
+  REMOVE_COMMENT,
+} from "../services/apollo/queries";
 
 const Commentitem = (props) => {
+  const { comment } = props;
+  const onError = () => onErrorMutation(MUTATING);
+
   const [editableComment, seteditableComment] = useState(true);
+  const [TobeUpdatedComment, setUpdateComment] = useState(comment.content);
+
+  const [updateComment] = useMutation(UPDATE_COMMENT, { onError });
+  const [removeComment] = useMutation(REMOVE_COMMENT, { onError });
+
+  const onCommentChange = ({ target }) => {
+    const input = target.value;
+    setUpdateComment(input);
+  };
+
+  const onSaveComment = () => {
+    updateComment({
+      variables: {
+        id: comment.id,
+        data: {
+          content: TobeUpdatedComment,
+        },
+      },
+    });
+    seteditableComment(true);
+  };
+
+  const onDeleteComment = () => {
+    removeComment({
+      variables: { id: comment.id },
+      refetchQueries: [{ query: GET_POSTS }],
+    });
+    seteditableComment(true);
+  };
 
   return (
     <li>
-      <Link to={`/profile/${props.comment.author.id}`}>
-        {props.comment.author.userName}
+      <Link to={`/profile/${comment.author.id}`}>
+        {comment.author.userName}
       </Link>
       :
       {editableComment ? (
         <div>
-          {props.comment.content}
+          {comment.content.split("\n").map((item, key) => {
+            return (
+              <React.Fragment key={key}>
+                {item}
+                <br />
+              </React.Fragment>
+            );
+          })}
           <button onClick={() => seteditableComment(false)}>edit</button>
-          <button>delete</button>
+          <button onClick={onDeleteComment}>delete</button>
         </div>
       ) : (
         <div>
-          <textarea type="text" value={props.comment.content} />
-          <button>save</button>
-          <button onClick={() => seteditableComment(true)}>cancel</button>
+          <textarea
+            type="text"
+            onChange={onCommentChange}
+            value={TobeUpdatedComment}
+          />
+          <button
+            disabled={_.isEmpty(TobeUpdatedComment)}
+            onClick={onSaveComment}
+          >
+            save
+          </button>
+          <button
+            onClick={() => {
+              seteditableComment(true);
+              setUpdateComment(comment.content);
+            }}
+          >
+            cancel
+          </button>
         </div>
       )}
-      <br />
       <small>
         commented at :
         {moment
-          .unix(props.comment.createdAt / 1000)
+          .unix(comment.createdAt / 1000)
           .format("MMMM Do YYYY, h:mm:ss a")}
       </small>
       <br />

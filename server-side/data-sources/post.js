@@ -11,11 +11,13 @@ class Posts extends MongoDataSource {
         : await this.model.find({}).sort({ createdAt: -1 });
     else
       return filter
-        ? await this.model.find({
-            content: new RegExp(`.*${filter}.*`, "i"),
-            author,
-          })
-        : await this.model.find({ author });
+        ? await this.model
+            .find({
+              content: new RegExp(`.*${filter}.*`, "i"),
+              author,
+            })
+            .sort({ createdAt: -1 })
+        : await this.model.find({ author }).sort({ createdAt: -1 });
   }
 
   async addPost(data = {}) {
