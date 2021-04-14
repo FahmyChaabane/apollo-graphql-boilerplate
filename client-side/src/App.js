@@ -7,6 +7,7 @@ import NotFound from "./components/NotFound";
 import Post from "./components/Post";
 import Logout from "./components/Logout";
 import Home from "./components/Home";
+import Users from "./components/Users";
 import PublicRoute from "./Routes/PublicRoute";
 import PrivateRoute from "./Routes/PrivateRoute";
 import currentUser from "./services/apollo/cache";
@@ -30,6 +31,7 @@ function App() {
         <PrivateRoute path="/post/:id" component={Post} />
         <PrivateRoute path="/profile/:id" component={Profile} />
         <PrivateRoute path="/profile" component={Profile} />
+        <PrivateRoute path="/users" component={Users} />
         <PrivateRoute path="/home" component={Home} />
         <Route path="/not-found" component={NotFound} />
         <Redirect from="/" exact to="/home" />

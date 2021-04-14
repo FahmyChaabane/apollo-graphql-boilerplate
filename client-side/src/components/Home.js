@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import onError, { MUTATING, QUERYING } from "../services/apollo/errorsHandler";
+import currentUser, { isAdmin } from "../services/apollo/cache";
 import { useQuery, useMutation } from "@apollo/client";
 import { CREATE_POST, GET_POSTS } from "../services/apollo/queries";
-import onError, { MUTATING, QUERYING } from "../services/apollo/errorsHandler";
 import Postitem from "./Postitem";
 import loader from "../images/loader.gif";
 import _ from "lodash";
-import currentUser from "../services/apollo/cache";
 
 const Home = () => {
   const [newPost, setnewPost] = useState("");
@@ -35,30 +35,39 @@ const Home = () => {
 
   if (loading) return <img src={loader} />;
   if (error) return `Error! ${error.message}`;
-
+  console.log("data",data);
   return (
     <div>
-      <i>Create a Post: </i>
-      <textarea
-        type="text"
-        className="p_wrap"
-        value={newPost}
-        placeholder="write something..."
-        onChange={onNewPostChange}
-      />
-      <button disabled={_.isEmpty(newPost)} onClick={createPost}>
-        post
-      </button>
-      {mutationLoading && (
-        <div>
-          <img src={loader} />
-        </div>
+      {!isAdmin() && (
+        <React.Fragment>
+          <i>Create a Post: </i>
+          <textarea
+            type="text"
+            className="p_wrap"
+            value={newPost}
+            placeholder="write something..."
+            onChange={onNewPostChange}
+          />
+          <button disabled={_.isEmpty(newPost)} onClick={createPost}>
+            post
+          </button>
+          {mutationLoading && (
+            <div>
+              <img src={loader} />
+            </div>
+          )}
+        </React.Fragment>
       )}
-      <ul>
-        {data.posts.map((post) => (
-          <Postitem key={post.id} post={post} />
-        ))}
-      </ul>
+      {data.posts.length !== 0 ? (
+        <ul>
+          Posts:
+          {data.posts.map((post) => (
+            <Postitem key={post.id} post={post} />
+          ))}
+        </ul>
+      ) : (
+        <p className="hello"> No post had been posted anything yet... </p>
+      )}
     </div>
   );
 };

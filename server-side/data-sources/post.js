@@ -20,6 +20,10 @@ class Posts extends MongoDataSource {
         : await this.model.find({ author }).sort({ createdAt: -1 });
   }
 
+  async getPost(_id) {
+    return await this.model.findOne({ _id });
+  }
+
   async addPost(data = {}) {
     const post = new this.model({
       ...data,

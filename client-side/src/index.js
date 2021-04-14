@@ -30,7 +30,38 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   //uri: "http://localhost:8080/graphql",
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Post: {
+        fields: {
+          commentde: {
+            read(existing, obj) {
+              console.log("existing", existing);
+              console.log("objcommentde", obj);
+              return "noice";
+            },
+          },
+          content: {
+            read(existing, obj) {
+              console.log("existing", existing);
+              console.log("objcontent", obj);
+              return "heyyyyo";
+            },
+          },
+        },
+      },
+      Query: {
+        fields: {
+          post(_, { args, toReference }) {
+            return toReference({
+              __typename: "Post",
+              id: args.id,
+            });
+          },
+        },
+      },
+    },
+  }),
   connectToDevTools: true,
 });
 

@@ -1,6 +1,7 @@
 import React from "react";
+import currentUser, { isAdmin } from "../services/apollo/cache";
 import { Link } from "react-router-dom";
-import currentUser from "../services/apollo/cache";
+import { isExpired } from "../services/authService";
 
 const Header = () => {
   return (
@@ -9,14 +10,15 @@ const Header = () => {
         <span> home</span>
       </Link>
 
-      {currentUser() ? (
+      {!isExpired() ? (
         <React.Fragment>
           <Link to="/profile">
-            <span> {currentUser().username}</span>
+            <span> {currentUser && currentUser().username}</span>
           </Link>
           <Link to="/logout">
             <span> logout</span>
           </Link>
+          {isAdmin() && <Link to="/users">Users</Link>}
         </React.Fragment>
       ) : (
         <React.Fragment>

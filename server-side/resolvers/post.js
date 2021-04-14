@@ -7,6 +7,9 @@ export default {
     posts(_, args, ctx, profile) {
       return ctx.dataSources.posts.getPosts(args.query);
     },
+    post(_, args, ctx, profile) {
+      return ctx.dataSources.posts.getPost(args.id);
+    },
   },
   Mutation: {
     createPost: async (_, { data }, ctx) => {

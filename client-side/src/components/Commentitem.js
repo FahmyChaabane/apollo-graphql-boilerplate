@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import moment from "moment";
-import _ from "lodash";
 import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
 import { useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { isToBeShownButton } from "../services/apollo/cache";
 import {
   GET_POSTS,
   UPDATE_COMMENT,
   REMOVE_COMMENT,
 } from "../services/apollo/queries";
+import moment from "moment";
+import _ from "lodash";
 
 const Commentitem = (props) => {
   const { comment } = props;
@@ -61,8 +62,12 @@ const Commentitem = (props) => {
               </React.Fragment>
             );
           })}
-          <button onClick={() => seteditableComment(false)}>edit</button>
-          <button onClick={onDeleteComment}>delete</button>
+          {isToBeShownButton(comment.author.id) && (
+            <React.Fragment>
+              <button onClick={() => seteditableComment(false)}>edit</button>
+              <button onClick={onDeleteComment}>delete</button>
+            </React.Fragment>
+          )}
         </div>
       ) : (
         <div>

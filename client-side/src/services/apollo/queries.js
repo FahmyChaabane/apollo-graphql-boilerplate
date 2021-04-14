@@ -23,6 +23,30 @@ export const GET_POSTS = gql`
   }
 `;
 
+export const GET_POST = gql`
+  query Post($id: ID!) {
+    post(id: $id) {
+      id
+      content
+      createdAt
+      commentde @client
+      author {
+        id
+        userName
+      }
+      comments {
+        id
+        content
+        createdAt
+        author {
+          id
+          userName
+        }
+      }
+    }
+  }
+`;
+
 export const UPDATE_POST = gql`
   mutation UpdatePost($id: ID!, $data: UpdatePostType!) {
     updatePost(id: $id, data: $data) {

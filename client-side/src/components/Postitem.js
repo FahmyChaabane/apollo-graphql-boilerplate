@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import moment from "moment";
-import Commentitem from "./Commentitem";
-import loader from "../images/loader.gif";
+import React, { useState, useEffect } from "react";
+import currentUser, { isToBeShownButton } from "../services/apollo/cache";
+import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
 import { useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 import {
@@ -10,17 +9,23 @@ import {
   REMOVE_POST,
   UPDATE_POST,
 } from "../services/apollo/queries";
-import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import Commentitem from "./Commentitem";
+import loader from "../images/loader.gif";
+import moment from "moment";
 import _ from "lodash";
-import currentUser from "../services/apollo/cache";
+import { useHistory } from "react-router-dom";
 
 const Postitem = (props) => {
   const { post } = props;
+  const history = useHistory();
   const onError = () => onErrorMutation(MUTATING);
 
   const [editablePost, seteditablePost] = useState(true);
-  const [TobeUpdatedPost, setUpdatePost] = useState(props.post.content);
+  const [TobeUpdatedPost, setUpdatePost] = useState("");
   const [newComment, setnewComment] = useState("");
+  useEffect(() => {
+    setUpdatePost(post.content);
+  }, []);
 
   const [updatePost] = useMutation(UPDATE_POST, { onError });
   const [removePost] = useMutation(REMOVE_POST, { onError });
@@ -81,9 +86,15 @@ const Postitem = (props) => {
               </React.Fragment>
             );
           })}
-          <button>expand</button>
-          <button onClick={() => seteditablePost(false)}>edit</button>
-          <button onClick={onDeletePost}>delete</button>
+          <button onClick={() => history.push(`/post/${post.id}`)}>
+            expand
+          </button>
+          {isToBeShownButton(post.author.id) && (
+            <React.Fragment>
+              <button onClick={() => seteditablePost(false)}>edit</button>
+              <button onClick={onDeletePost}>delete</button>
+            </React.Fragment>
+          )}
         </div>
       ) : (
         <div>
@@ -110,6 +121,12 @@ const Postitem = (props) => {
         {moment.unix(post.createdAt / 1000).format("MMMM Do YYYY, h:mm:ss a")}
       </small>
       <br />
+      {post.comments.length === 0 ? (
+        <p className="hello">No comment was yet submitted</p>
+      ) : (
+        <p>This post contains {post.comments.length} comment</p>
+      )}
+      {/*
       {post.comments.length !== 0 && (
         <ul>
           comments :
@@ -132,6 +149,7 @@ const Postitem = (props) => {
       <button disabled={_.isEmpty(newComment)} onClick={createComment}>
         comment
       </button>
+      */}
       <hr />
     </li>
   );
