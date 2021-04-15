@@ -6,6 +6,9 @@ class Users extends MongoDataSource {
       ? await this.model.find({ userName: new RegExp(`.*${filter}.*`, "i") })
       : await this.model.find({});
   }
+  async getUser(_id) {
+    return await this.model.findOne({ _id });
+  }
 
   async updateUser(_id, data) {
     return await this.model.findOneAndUpdate(

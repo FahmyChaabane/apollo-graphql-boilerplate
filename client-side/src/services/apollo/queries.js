@@ -8,7 +8,12 @@ export const GET_POSTS = gql`
       createdAt
       author {
         id
+        firstName
+        lastName
         userName
+        email
+        age
+        role
       }
       comments {
         id
@@ -16,7 +21,13 @@ export const GET_POSTS = gql`
         createdAt
         author {
           id
+          firstName
+          lastName
           userName
+          email
+          age
+          id
+          role
         }
       }
     }
@@ -29,7 +40,6 @@ export const GET_POST = gql`
       id
       content
       createdAt
-      commentde @client
       author {
         id
         userName
@@ -104,6 +114,34 @@ export const CREATE_COMMENT = gql`
     createComment(data: $data) {
       id
       content
+    }
+  }
+`;
+
+export const GET_USERS = gql`
+  query {
+    users {
+      id
+      firstName
+      lastName
+      userName
+      age
+      email
+      role
+    }
+  }
+`;
+
+export const GET_USER = gql`
+  query User($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      lastName
+      userName
+      age
+      email
+      role
     }
   }
 `;

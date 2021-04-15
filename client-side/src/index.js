@@ -32,29 +32,17 @@ const client = new ApolloClient({
   //uri: "http://localhost:8080/graphql",
   cache: new InMemoryCache({
     typePolicies: {
-      Post: {
-        fields: {
-          commentde: {
-            read(existing, obj) {
-              console.log("existing", existing);
-              console.log("objcommentde", obj);
-              return "noice";
-            },
-          },
-          content: {
-            read(existing, obj) {
-              console.log("existing", existing);
-              console.log("objcontent", obj);
-              return "heyyyyo";
-            },
-          },
-        },
-      },
       Query: {
         fields: {
           post(_, { args, toReference }) {
             return toReference({
               __typename: "Post",
+              id: args.id,
+            });
+          },
+          user(_, { args, toReference }) {
+            return toReference({
+              __typename: "User",
               id: args.id,
             });
           },

@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import currentUser, { isToBeShownButton } from "../services/apollo/cache";
+import { isToBeShownButton } from "../services/apollo/cache";
 import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
 import { useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 import {
-  CREATE_COMMENT,
   GET_POSTS,
   REMOVE_POST,
   UPDATE_POST,
 } from "../services/apollo/queries";
-import Commentitem from "./Commentitem";
-import loader from "../images/loader.gif";
 import moment from "moment";
 import _ from "lodash";
 import { useHistory } from "react-router-dom";
@@ -22,17 +19,12 @@ const Postitem = (props) => {
 
   const [editablePost, seteditablePost] = useState(true);
   const [TobeUpdatedPost, setUpdatePost] = useState("");
-  const [newComment, setnewComment] = useState("");
   useEffect(() => {
     setUpdatePost(post.content);
   }, []);
 
   const [updatePost] = useMutation(UPDATE_POST, { onError });
   const [removePost] = useMutation(REMOVE_POST, { onError });
-  const [
-    createNewComment,
-    { loading: mutationLoading },
-  ] = useMutation(CREATE_COMMENT, { onError });
 
   const onPostChange = ({ target }) => {
     const input = target.value;
@@ -52,25 +44,6 @@ const Postitem = (props) => {
       refetchQueries: [{ query: GET_POSTS }],
     });
     seteditablePost(true);
-  };
-
-  const onNewCommentChange = ({ target }) => {
-    const input = target.value;
-    setnewComment(input);
-  };
-
-  const createComment = () => {
-    createNewComment({
-      variables: {
-        data: {
-          content: newComment,
-          author: currentUser()._id,
-          post: post.id,
-        },
-      },
-      refetchQueries: [{ query: GET_POSTS }],
-    });
-    setnewComment("");
   };
 
   return (
@@ -122,9 +95,11 @@ const Postitem = (props) => {
       </small>
       <br />
       {post.comments.length === 0 ? (
-        <p className="hello">No comment was yet submitted</p>
+        <p>This post has no submitted comment yet</p>
       ) : (
-        <p>This post contains {post.comments.length} comment</p>
+        <p className="hello">
+          This post contains {post.comments.length} comment
+        </p>
       )}
       {/*
       {post.comments.length !== 0 && (

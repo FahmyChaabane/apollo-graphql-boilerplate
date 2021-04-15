@@ -12,7 +12,7 @@ const Header = () => {
 
       {!isExpired() ? (
         <React.Fragment>
-          <Link to="/profile">
+          <Link to={`/profile/${currentUser()._id}`}>
             <span> {currentUser && currentUser().username}</span>
           </Link>
           <Link to="/logout">

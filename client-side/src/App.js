@@ -15,6 +15,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { getCurrentUser } from "./services/authService";
 import "!style-loader!css-loader!react-toastify/dist/ReactToastify.css";
+import UserForm from "./components/UserForm";
 
 function App() {
   currentUser(getCurrentUser());
@@ -29,8 +30,8 @@ function App() {
         <PublicRoute path="/register" component={Register} />
         <PrivateRoute path="/logout" component={Logout} />
         <PrivateRoute path="/post/:id" component={Post} />
+        <PrivateRoute path="/profile/:id/modify" component={UserForm} />
         <PrivateRoute path="/profile/:id" component={Profile} />
-        <PrivateRoute path="/profile" component={Profile} />
         <PrivateRoute path="/users" component={Users} />
         <PrivateRoute path="/home" component={Home} />
         <Route path="/not-found" component={NotFound} />

@@ -1,19 +1,39 @@
-import React, { useState } from "react";
-import validator from "validator";
+import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
-import { register } from "../services/authService";
+import { useParams, useHistory } from "react-router-dom";
+import validator from "validator";
+import { useQuery } from "@apollo/client";
+import loader from "../images/loader.gif";
+import { GET_USER } from "../services/apollo/queries";
 
-const Register = (props) => {
+const UserForm = () => {
+  let { id } = useParams();
+  const history = useHistory();
+  let user;
+  const { loading, error, data } = useQuery(GET_USER, {
+    variables: {
+      id,
+    },
+    onError: () => onCustomError(QUERYING),
+  });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
   const [age, setAge] = useState("");
-  const [role, setRole] = useState("USER");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [formError, setFormError] = useState({});
   const [requestError, setRequestError] = useState({});
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setUserName(user.userName);
+      setAge(user.age);
+    } else {
+      history.push(`profile/${id}`);
+    }
+  }, []);
 
   const onFirstNameChange = (e) => {
     const input = e.target.value;
@@ -63,51 +83,8 @@ const Register = (props) => {
     setAge(input);
   };
 
-  const onRoleChange = (e) => {
-    const input = e.target.value;
-    const isValid = validator.isAlphanumeric(input);
-    if (!isValid) {
-      setFormError((prevState) => ({
-        ...prevState,
-        role: "role is not valid",
-      }));
-    } else delete formError.role;
-    setRole(input);
-  };
-
-  const onEmailChange = (e) => {
-    const input = e.target.value;
-    const isValid = validator.isEmail(input);
-    if (!isValid) {
-      setFormError((prevState) => ({
-        ...prevState,
-        email: "email is not valid",
-      }));
-    } else delete formError.email;
-    setEmail(input);
-  };
-
-  const onPasswordChange = (e) => {
-    const input = e.target.value;
-    const isValid = validator.isStrongPassword(input, {
-      pointsPerRepeat: 1,
-      pointsPerUnique: 1,
-      returnScore: true,
-    });
-    if (isValid < 18) {
-      setFormError((prevState) => ({
-        ...prevState,
-        password: "password is not strong enough",
-      }));
-    } else delete formError.password;
-    setPassword(input);
-  };
-
   const anyInputIsEmpty = () => {
     return (
-      _.isEmpty(password) ||
-      _.isEmpty(email) ||
-      _.isEmpty(role) ||
       _.isEmpty(age) ||
       _.isEmpty(userName) ||
       _.isEmpty(lastName) ||
@@ -131,7 +108,10 @@ const Register = (props) => {
       }
     }
   };
-  //Helmi@mail.com
+  if (loading) return <img src={loader} />;
+  if (error) return `Error! ${error.message}`;
+  user = data.user;
+
   return (
     <div>
       <form onSubmit={onSubmitLogin}>
@@ -186,43 +166,13 @@ const Register = (props) => {
           </small>
         )}
         <br />
-        <select name="role" value={role} onChange={onRoleChange}>
-          <option value="USER">User</option>
-          <option value="ADMIN">Admin</option>
-        </select>
-        {formError && formError.role && (
-          <small>
-            <i>{formError.role}</i>
-          </small>
-        )}
+        <input name="email" type="text" value={user.role} disabled={true} />
+
         <br />
-        <input
-          name="email"
-          type="text"
-          value={email}
-          onChange={onEmailChange}
-          placeholder="email"
-        />
-        {formError && formError.email && (
-          <small>
-            <i>{formError.email}</i>
-          </small>
-        )}
+        <input name="email" type="text" value={user.email} disabled={true} />
+
         <br />
-        <input
-          name="password"
-          type="password"
-          value={password}
-          onChange={onPasswordChange}
-          placeholder="password"
-        />
-        {formError && formError.password && (
-          <small>
-            <i>{formError.password}</i>
-          </small>
-        )}
-        <br />
-        <button>login</button>
+        <button>Save Changes</button>
         {requestError && requestError.request && (
           <small>
             <i>{requestError.request}</i>
@@ -233,4 +183,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default UserForm;

@@ -1,43 +1,58 @@
 import React, { useState, useEffect } from "react";
-import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import onCustomError, {
+  MUTATING,
+  QUERYING,
+} from "../services/apollo/errorsHandler";
 import { useQuery, useMutation } from "@apollo/client";
 import {
   CREATE_COMMENT,
   GET_POST,
+  GET_POSTS,
   REMOVE_POST,
   UPDATE_POST,
 } from "../services/apollo/queries";
 import loader from "../images/loader.gif";
 import Commentitem from "./Commentitem";
-import { useParams } from "react-router-dom";
-import { isToBeShownButton } from "../services/apollo/cache";
+import { useParams, useHistory } from "react-router-dom";
+import currentUser, { isToBeShownButton } from "../services/apollo/cache";
 import moment from "moment";
 
 const Post = () => {
-  const onError = () => onErrorMutation(MUTATING);
-
-  const [editablePost, seteditablePost] = useState(true);
-  const [TobeUpdatedPost, setUpdatePost] = useState("");
-  const [newComment, setnewComment] = useState("");
-  /*
-  useEffect(() => {
-    setUpdatePost(post.content);
-  }, []);
-  */
-
-  let { id } = useParams();
+  let post;
+  const history = useHistory();
+  const { id } = useParams();
   const { loading, error, data } = useQuery(GET_POST, {
     variables: {
       id,
     },
-    onError: () => onError(QUERYING),
+    onError: () => {
+      return onCustomError(QUERYING);
+    },
   });
-  const [updatePost] = useMutation(UPDATE_POST, { onError });
-  const [removePost] = useMutation(REMOVE_POST, { onError });
+
+  const [deleted, setDeleted] = useState(false);
+  const [editablePost, seteditablePost] = useState(true);
+  const [TobeUpdatedPost, setUpdatePost] = useState("");
+  const [newComment, setnewComment] = useState("");
+
+  useEffect(() => {
+    if (post) setUpdatePost(post.content);
+    // soit tjibou mel cache, sinon aandekch le droit t'accedi mel url
+    else {
+      history.push("/home");
+    }
+  }, []);
+
+  const [updatePost] = useMutation(UPDATE_POST, {
+    onError: () => onCustomError(MUTATING),
+  });
+  const [removePost] = useMutation(REMOVE_POST, {
+    onError: () => onCustomError(MUTATING),
+  });
   const [
     createNewComment,
     { loading: mutationLoading },
-  ] = useMutation(CREATE_COMMENT, { onError });
+  ] = useMutation(CREATE_COMMENT, { onError: () => onCustomError(MUTATING) });
 
   const onPostChange = ({ target }) => {
     const input = target.value;
@@ -56,7 +71,8 @@ const Post = () => {
       variables: { id: post.id },
       refetchQueries: [{ query: GET_POSTS }],
     });
-    seteditablePost(true);
+    //    seteditablePost(true);
+    setDeleted(true);
   };
 
   const onNewCommentChange = ({ target }) => {
@@ -77,10 +93,19 @@ const Post = () => {
     });
     setnewComment("");
   };
+  if (deleted)
+    return (
+      <h4>Post has been deleted, you propably go back to the home page</h4>
+    );
 
   if (loading) return <img src={loader} />;
-  if (error) return `Error! ${error.message}`;
-  const { post } = data;
+  if (error) {
+    console.log(error.message);
+    return (
+      <h3>Error! Post either not exist in our database or has been deleted</h3>
+    );
+  }
+  post = data.post;
   return (
     <div>
       {post.author.userName}
@@ -126,20 +151,22 @@ const Post = () => {
         posted at :
         {moment.unix(post.createdAt / 1000).format("MMMM Do YYYY, h:mm:ss a")}
       </small>
-      <br />
       {post.comments.length !== 0 && (
-        <ul>
+        <div>
           comments :
-          {post.comments.map((comment) => (
-            <Commentitem key={comment.id} comment={comment} />
-          ))}
-        </ul>
+          <ul>
+            {post.comments.map((comment) => (
+              <Commentitem key={comment.id} comment={comment} />
+            ))}
+          </ul>
+        </div>
       )}
       {mutationLoading && (
         <div>
           <img src={loader} />
         </div>
       )}
+      <br />
       <input
         type="text"
         placeholder="add comment"
@@ -149,7 +176,6 @@ const Post = () => {
       <button disabled={_.isEmpty(newComment)} onClick={createComment}>
         comment
       </button>
-      <hr />
     </div>
   );
 };

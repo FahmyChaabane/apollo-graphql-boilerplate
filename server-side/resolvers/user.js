@@ -8,6 +8,9 @@ export default {
     users(_, args, ctx, profile) {
       return ctx.dataSources.users.getUsers(args.query);
     },
+    user(_, args, ctx, profile) {
+      return ctx.dataSources.users.getUser(args.id);
+    },
   },
   Mutation: {
     updateUser: async (_, { id, data }, ctx) => {

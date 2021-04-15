@@ -3,6 +3,7 @@ import { gql } from "apollo-server-express";
 export default gql`
   extend type Query {
     users(query: String): [User!]!
+    user(id: ID!): User!
   }
 
   extend type Mutation {
