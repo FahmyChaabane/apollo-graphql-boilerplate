@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import _ from "lodash";
-import { toast } from "react-toastify";
-import { useParams, useHistory } from "react-router-dom";
+import onCustomError, {
+  MUTATING,
+  onInputError,
+  QUERYING,
+} from "../services/errorsHandler";
+import { useQuery, useMutation } from "@apollo/client";
+import { useParams, useHistory, useLocation } from "react-router-dom";
+import { GET_USER, UPDATE_USER } from "../services/apollo/queries";
+import { onUpdateSuccess } from "../services/onSuccess";
 import validator from "validator";
-import { useQuery } from "@apollo/client";
+import _ from "lodash";
 import loader from "../images/loader.gif";
-import { GET_USER } from "../services/apollo/queries";
 
 const UserForm = () => {
   let { id } = useParams();
   const history = useHistory();
+  let location = useLocation();
   let user;
   const { loading, error, data } = useQuery(GET_USER, {
     variables: {
@@ -22,7 +28,6 @@ const UserForm = () => {
   const [userName, setUserName] = useState("");
   const [age, setAge] = useState("");
   const [formError, setFormError] = useState({});
-  const [requestError, setRequestError] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -31,9 +36,13 @@ const UserForm = () => {
       setUserName(user.userName);
       setAge(user.age);
     } else {
-      history.push(`profile/${id}`);
+      return history.push(`/profile/${id}`);
     }
   }, []);
+
+  const [updateUser] = useMutation(UPDATE_USER, {
+    onError: () => onCustomError(MUTATING),
+  });
 
   const onFirstNameChange = (e) => {
     const input = e.target.value;
@@ -84,30 +93,28 @@ const UserForm = () => {
   };
 
   const anyInputIsEmpty = () => {
-    return (
-      _.isEmpty(age) ||
-      _.isEmpty(userName) ||
-      _.isEmpty(lastName) ||
-      _.isEmpty(firstName)
-    );
+    return _.isEmpty(userName) || _.isEmpty(lastName) || _.isEmpty(firstName);
   };
 
-  const onSubmitLogin = async (e) => {
+  const onSubmitLogin = (e) => {
     e.preventDefault();
     if (!_.isEmpty(formError) || anyInputIsEmpty()) {
-      return toast.error("Form is not elligible to be sent to the server !");
+      console.log(anyInputIsEmpty());
+      console.log("age", age);
+      console.log("userName", userName);
+      console.log("lastName", lastName);
+      console.log("firstName", firstName);
+      return onInputError();
     }
-    try {
-      await register(firstName, lastName, userName, age, role, email, password);
-      props.history.push("/");
-    } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        const requestError = { ...requestError };
-        requestError.request = ex.response.data;
-        setRequestError(requestError);
-      }
-    }
+    updateUser({
+      variables: {
+        id,
+        data: { firstName, lastName, userName, age },
+      },
+    });
+    onUpdateSuccess();
   };
+
   if (loading) return <img src={loader} />;
   if (error) return `Error! ${error.message}`;
   user = data.user;
@@ -173,11 +180,6 @@ const UserForm = () => {
 
         <br />
         <button>Save Changes</button>
-        {requestError && requestError.request && (
-          <small>
-            <i>{requestError.request}</i>
-          </small>
-        )}
       </form>
     </div>
   );

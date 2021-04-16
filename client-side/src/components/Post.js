@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import onCustomError, {
-  MUTATING,
-  QUERYING,
-} from "../services/apollo/errorsHandler";
+import currentUser, { isToBeShownButton } from "../services/apollo/cache";
+import onCustomError, { MUTATING, QUERYING } from "../services/errorsHandler";
 import { useQuery, useMutation } from "@apollo/client";
+import { useParams, useHistory } from "react-router-dom";
 import {
   CREATE_COMMENT,
   GET_POST,
@@ -13,9 +12,8 @@ import {
 } from "../services/apollo/queries";
 import loader from "../images/loader.gif";
 import Commentitem from "./Commentitem";
-import { useParams, useHistory } from "react-router-dom";
-import currentUser, { isToBeShownButton } from "../services/apollo/cache";
 import moment from "moment";
+import { onAppendSuccess, onUpdateSuccess } from "../services/onSuccess";
 
 const Post = () => {
   let post;
@@ -39,7 +37,7 @@ const Post = () => {
     if (post) setUpdatePost(post.content);
     // soit tjibou mel cache, sinon aandekch le droit t'accedi mel url
     else {
-      history.push("/home");
+      return history.push("/home");
     }
   }, []);
 
@@ -63,6 +61,7 @@ const Post = () => {
     updatePost({
       variables: { id: post.id, data: { content: TobeUpdatedPost } },
     });
+    onUpdateSuccess();
     seteditablePost(true);
   };
 
@@ -91,6 +90,7 @@ const Post = () => {
       },
       refetchQueries: [{ query: GET_POSTS }],
     });
+    onAppendSuccess();
     setnewComment("");
   };
   if (deleted)
@@ -100,7 +100,6 @@ const Post = () => {
 
   if (loading) return <img src={loader} />;
   if (error) {
-    console.log(error.message);
     return (
       <h3>Error! Post either not exist in our database or has been deleted</h3>
     );

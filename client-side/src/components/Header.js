@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <div>
       <Link to="/home">
-        <span> home</span>
+        <span> home </span>
       </Link>
 
       {!isExpired() ? (
@@ -16,7 +16,7 @@ const Header = () => {
             <span> {currentUser && currentUser().username}</span>
           </Link>
           <Link to="/logout">
-            <span> logout</span>
+            <span> logout </span>
           </Link>
           {isAdmin() && <Link to="/users">Users</Link>}
         </React.Fragment>

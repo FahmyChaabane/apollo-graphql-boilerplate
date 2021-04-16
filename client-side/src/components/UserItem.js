@@ -8,6 +8,7 @@ const UserItem = (props) => {
         <p>FirstName: {user.firstName}</p>
         <p>LastName: {user.lastName}</p>
         <p>UserName: {user.userName}</p>
+        <p>age: {user.age}</p>
         <p>Email: {user.email}</p>
         <p>Role: {user.role}</p>
         <button>delete user</button>

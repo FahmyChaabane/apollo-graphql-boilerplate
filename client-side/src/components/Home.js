@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import onError, { MUTATING, QUERYING } from "../services/apollo/errorsHandler";
+import onError, { MUTATING, QUERYING } from "../services/errorsHandler";
 import currentUser, { isAdmin } from "../services/apollo/cache";
 import { useQuery, useMutation } from "@apollo/client";
 import { CREATE_POST, GET_POSTS } from "../services/apollo/queries";
+import { onAppendSuccess } from "../services/onSuccess";
 import Postitem from "./Postitem";
 import loader from "../images/loader.gif";
 import _ from "lodash";
@@ -30,6 +31,7 @@ const Home = () => {
       variables: { data: { author: currentUser()._id, content: newPost } },
       refetchQueries: [{ query: GET_POSTS }],
     });
+    onAppendSuccess();
     setnewPost("");
   };
 

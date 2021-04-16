@@ -1,8 +1,8 @@
 import React, { useState } from "react";
+import { register } from "../services/authService";
+import { onInputError } from "../services/errorsHandler";
 import validator from "validator";
 import _ from "lodash";
-import { toast } from "react-toastify";
-import { register } from "../services/authService";
 
 const Register = (props) => {
   const [firstName, setFirstName] = useState("");
@@ -118,7 +118,7 @@ const Register = (props) => {
   const onSubmitLogin = async (e) => {
     e.preventDefault();
     if (!_.isEmpty(formError) || anyInputIsEmpty()) {
-      return toast.error("Form is not elligible to be sent to the server !");
+      return onInputError();
     }
     try {
       await register(firstName, lastName, userName, age, role, email, password);

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { isToBeShownButton } from "../services/apollo/cache";
-import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import onErrorMutation, { MUTATING } from "../services/errorsHandler";
 import { useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
 import {
   GET_POSTS,
   REMOVE_POST,
   UPDATE_POST,
 } from "../services/apollo/queries";
+import { Link } from "react-router-dom";
+import { isToBeShownButton } from "../services/apollo/cache";
+import { useHistory } from "react-router-dom";
+import { onUpdateSuccess } from "../services/onSuccess";
 import moment from "moment";
 import _ from "lodash";
-import { useHistory } from "react-router-dom";
 
 const Postitem = (props) => {
   const { post } = props;
@@ -35,6 +36,7 @@ const Postitem = (props) => {
     updatePost({
       variables: { id: post.id, data: { content: TobeUpdatedPost } },
     });
+    onUpdateSuccess();
     seteditablePost(true);
   };
 

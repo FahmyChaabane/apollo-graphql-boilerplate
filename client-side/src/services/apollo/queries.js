@@ -145,3 +145,17 @@ export const GET_USER = gql`
     }
   }
 `;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($id: ID!, $data: UpdateUserType!) {
+    updateUser(id: $id, data: $data) {
+      id
+      firstName
+      lastName
+      userName
+      age
+      email
+      role
+    }
+  }
+`;

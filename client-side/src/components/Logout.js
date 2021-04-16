@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { logout } from "../services/authService";
 
-const Logout = (props) => {
+const Logout = () => {
   useEffect(() => {
     logout();
     window.location = "/login";

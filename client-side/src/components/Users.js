@@ -1,11 +1,11 @@
 import React from "react";
+import onError, { QUERYING } from "../services/errorsHandler";
 import { GET_USERS } from "../services/apollo/queries";
-import onError, { QUERYING } from "../services/apollo/errorsHandler";
 import { useQuery } from "@apollo/client";
-import loader from "../images/loader.gif";
-import UserItem from "./UserItem";
 import { isAdmin } from "../services/apollo/cache";
 import { Redirect } from "react-router";
+import loader from "../images/loader.gif";
+import UserItem from "./UserItem";
 
 const Users = () => {
   if (!isAdmin()) return <Redirect to="/not-found" />;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import validator from "validator";
 import _ from "lodash";
-import { toast } from "react-toastify";
 import { login } from "../services/authService";
+import { onInputError } from "../services/errorsHandler";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ const Login = (props) => {
   const onSubmitLogin = async (e) => {
     e.preventDefault();
     if (!_.isEmpty(formError) || _.isEmpty(password) || _.isEmpty(email)) {
-      return toast.error("Form is not elligible to be sent to the server !");
+      return onInputError();
     }
     try {
       await login(email, password);

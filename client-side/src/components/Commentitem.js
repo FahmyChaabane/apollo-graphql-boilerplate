@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import onErrorMutation, { MUTATING } from "../services/apollo/errorsHandler";
+import onErrorMutation, { MUTATING } from "../services/errorsHandler";
 import { useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
-import { isToBeShownButton } from "../services/apollo/cache";
 import {
   GET_POSTS,
   UPDATE_COMMENT,
   REMOVE_COMMENT,
 } from "../services/apollo/queries";
+import { Link } from "react-router-dom";
+import { isToBeShownButton } from "../services/apollo/cache";
+import { onUpdateSuccess } from "../services/onSuccess";
 import moment from "moment";
 import _ from "lodash";
 
@@ -35,6 +36,7 @@ const Commentitem = (props) => {
         },
       },
     });
+    onUpdateSuccess();
     seteditableComment(true);
   };
 

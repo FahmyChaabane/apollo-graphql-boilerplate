@@ -5,6 +5,7 @@ import dbConfig from "./configs/db";
 import apolloConfig from "./configs/apollo";
 import register from "./routes/register";
 import auth from "./routes/auth";
+import mail from "./routes/mail";
 import home from "./routes/home";
 import error from "./middlewares/error";
 
@@ -38,6 +39,7 @@ const { APP_PORT, NODE_ENV, MONGO_DATABASE } = process.env;
     app.use(express.json());
     app.use("/api/register", register);
     app.use("/api/auth", auth);
+    app.use("/api/mail", mail);
     app.use("/", home);
     app.use(error);
 
